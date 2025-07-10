@@ -25,6 +25,8 @@ int micro_shell(char **argv, int i, char **envp)
     int status = 0;
     int has_pipe = argv[i] && strcmp(argv[i], "|") == 0;
 
+    if (!has_pipe && strcmp(argv[0], "cd") == 0)
+        return cd(i, argv);
     if (has_pipe && pipe(pipe_fd) == -1)
         return (send_error("pipe"));
     int pid = fork();
@@ -34,13 +36,14 @@ int micro_shell(char **argv, int i, char **envp)
         if (has_pipe && (dup2(pipe_fd[1], 1) == -1 || close(pipe_fd[0]) == -1 || close(pipe_fd[1]) == -1))
             return (send_error("dup2"));
         if (strcmp(argv[0], "cd") == 0)
-            cd(i, argv);
+            return cd(i, argv);
         execve(*argv, argv, envp);
+        return (send_error("exevce\n"));
     }
     waitpid(pid, &status, 0);
     if (has_pipe && (dup2(pipe_fd[0], 0) == -1 || close(pipe_fd[0]) == -1 || close(pipe_fd[1]) == -1))
         send_error("dup2");
-    return (WIFEXITED(status) && WEXITSTATUS(status));
+    return 0;
 }
 
 int main(int argc, char **argv, char **envp)
