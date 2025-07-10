@@ -53,8 +53,9 @@ int main(int argc, char **argv, char **envp)
 
     if (argc < 2)
         return -1;
-    while (argv[i] && argv[++i])
+    while (argv[i] && i < argc - 1)
     {
+        ++i;
         argv += i;
         i = 0;
         while (argv[i] && strcmp(argv[i], "|") && strcmp(argv[i], ";"))
