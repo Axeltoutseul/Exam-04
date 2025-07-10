@@ -38,7 +38,7 @@ int micro_shell(char **argv, int i, char **envp)
         if (strcmp(argv[0], "cd") == 0)
             return cd(i, argv);
         execve(*argv, argv, envp);
-        return (send_error("exevce\n"));
+        return (send_error("execve\n"));
     }
     waitpid(pid, &status, 0);
     if (has_pipe && (dup2(pipe_fd[0], 0) == -1 || close(pipe_fd[0]) == -1 || close(pipe_fd[1]) == -1))
